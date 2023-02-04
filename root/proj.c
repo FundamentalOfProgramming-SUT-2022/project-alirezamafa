@@ -19,11 +19,12 @@
      void insertstr(char * address);
      void copyb(char *address,int rowloc,int clumnloc,int size);
      void copyf(char *address,int rowloc,int clumnloc,int size);
+     void wfile(char *address,char *str,int rowloc,int clumnloc);
      void createdirectory(char * mysit); 
      void createdir(char *mysit);
      void removedoubleqoute(char *s);
      void removesubstring(char *s1,char *s2);
-     char *copyingorcutingbackup;
+     FILE *copyingorcutingbackup=fopen("clipboard.txt","w");
        int main(){
         mkdir("root");
         char input[1000];
@@ -577,6 +578,7 @@ if(rowloc==1){
     numofline--;
 }
 file=fopen(address,"r");
+copyingorcutingbackup=fopen("clipboard.txt","w");
 imp=fgetc(file);
 for (int  i = 0; i < numofline; i++)
 {
@@ -585,11 +587,12 @@ for (int  i = 0; i < numofline; i++)
 int i;
 for (  i = 0; i < size; i++)
 {
-    copyingorcutingbackup[i]=imp;
+    fputc(imp,copyingorcutingbackup);
     imp=fgetc(file);
 }
 printf("copying string done\n");
-copyingorcutingbackup[i]=NULL;
+//copyingorcutingbackup[i]=NULL;
+fclose(copyingorcutingbackup);
 fclose(file);
 }
 void cutstr(char *address){
@@ -640,6 +643,8 @@ printf("cutting string done\n");
 }
 void pastestr(char *address){
   char *pos;
+  char imp;
+  int numofline=0,numofchar=0;
   int rowofpos,clumnofpos;
   scanf("%s",pos);
   if(strcmp(pos,"--pos")){
@@ -647,5 +652,64 @@ void pastestr(char *address){
   }
   else
   scanf("%d:%d",&rowofpos,&clumnofpos);
-  
+ FILE *file =fopen(address,"r");
+ if(file==0){
+    printf("file dosent exist\n");
+ }
+ FILE *temp=fopen("./temp","w");
+  while (!feof(file))
+  {
+    imp=fgetc(file);
+    if(imp=='\n'){
+        numofline++;
+    }
+  }
+  fseek(file,0,SEEK_SET);
+  if(rowofpos>numofline){
+    printf("out of range or there is no enough word to do program\n");
+    return;
+  }
+  if(copyingorcutingbackup==NULL){
+    printf("err:the there isnt any word to paste in clipboard\n");
+    return;
+  }
+  wfile(address,copyingorcutingbackup,rowofpos,clumnofpos);
+}
+void wfile(char *address,char * str,int rowloc,int clumnloc){
+FILE *file=fopen(address,"r");
+char imp;
+int numofchar=0 ,numofline=1;
+if(file==0){
+    printf("file dosent exist\n");
+}
+FILE *temp=fopen("./temp","w");
+copyingorcutingbackup=fopen("clipboard.txt","w");
+if(clumnloc==0&&rowloc==1){
+    fprintf(temp,"%s",str);
+}
+while (!feof(file))
+{
+    if(numofline==rowloc){
+        if(numofchar==clumnloc){
+            while (imp=fgetc(str)!=EOF)
+            {
+            fputc(imp,copyingorcutingbackup);
+            }
+            
+        }
+       numofchar++;
+    }
+
+if(imp=fgetc(str)!=EOF){
+    fputc(imp,copyingorcutingbackup);
+}
+if(imp=='\n'){
+    numofline++;
+}
+}
+fclose(copyingorcutingbackup);
+fclose(temp);
+remove(temp);
+fclose(file);
+printf("pasting string done \n");
 }
