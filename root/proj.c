@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <sys/stat.h>
 #include <errno.h>
+#include <dirent.h>
 #include <stdbool.h>
 #define  hal 1
 #define  no 0
@@ -13,6 +14,7 @@
      void cutstr(char *address);
      void autoindent(char *file);
      void copystr(char *addres);
+     void tree(int depth,int counterfromz);
      void removestr(char *address);
      void pastestr(char *address)
      void removeb(char *address,int rowloc,int clumnloc,int size);
@@ -32,6 +34,7 @@
         char input[1000];
         char input2[1000];
         char address[1000];
+        int depth;
         while (1)
         {
         scanf("%s",input);
@@ -116,6 +119,17 @@
             else if(strcmp(input,"auto-indent")==0){
                 scanf("%s",input2);
                 autoindent(input2);
+            }
+            else if(input,"tree"){
+                scanf("%d",&depth);
+                if(depth<-1){
+                    printf("invalid input\n");
+                }
+                else if(depth ==-1){
+                    tree(50,0)
+                }
+                else
+                tree(depth,0);
             }
             else {
                 printf("invalid input\n");
@@ -870,8 +884,37 @@ for (int i = 0; indentmod[i]!=NULL; i++)
         }
     }
 } 
-        
+  myfile=fopen(file,"w");
+  fprintf(myfile,"%s",indentmod);
+  fclose(myfile);      
     }
 }
 
+void tree(int depth,int counterformz){
+if(depth==-1){
+    return;
+}
+struct dirent*alldirectory;
+DIR*maindir=opendir(".");
+if(maindir==0){
+    printf("there isnt main directory \n");
+    return;
+}
+while (alldirectory=readdir(maindir)!=NULL)
+{
+    if(strcmp(alldirectory,".")==0||strcmp(alldirectory,"..")==0){
+        continue;
+    }
+
+for(int i=0;i<counterformz;i++){
+    printf("|   ");
+}
+printf("|---");
+printf("%s\n",alldirectory->d_name);
+if(chdir(alldirectory->d_name)==0){
+    tree(depth-1,counterformz+1);
+    chdir("..");
+}
+}
+closedir(maindir);
 }
