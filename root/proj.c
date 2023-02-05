@@ -11,6 +11,7 @@
      void createfile(char * mysit);
      void cat (char *filename );
      void cutstr(char *address);
+     void autoindent(char *file);
      void copystr(char *addres);
      void removestr(char *address);
      void pastestr(char *address)
@@ -22,6 +23,7 @@
      void wfile(char *address,char *str,int rowloc,int clumnloc);
      void createdirectory(char * mysit); 
      void createdir(char *mysit);
+     void find(char *string);
      void removedoubleqoute(char *s);
      void removesubstring(char *s1,char *s2);
      FILE *copyingorcutingbackup=fopen("clipboard.txt","w");
@@ -100,6 +102,20 @@
                 }
                 else
                 printf("invalid input\n");
+            }
+            else if(strcmp(input,"find")==0){
+                scanf("%s",input2);
+                if(strcmp(input,"--size")==0){
+                    scanf("%s",address);
+                    find(address);
+                }
+                else{
+                    printf("invalid input\n");
+                }
+            }
+            else if(strcmp(input,"auto-indent")==0){
+                scanf("%s",input2);
+                autoindent(input2);
             }
             else {
                 printf("invalid input\n");
@@ -712,4 +728,150 @@ fclose(temp);
 remove(temp);
 fclose(file);
 printf("pasting string done \n");
+}
+void find (char *string){
+    char *input3;
+    char *file;
+    char *absoluteadd;
+    char *all;
+    int checkbyword=0;
+    char * type;
+    int at;
+    gets(input3);
+    sscanf(input3,"%s%s",file,absoluteadd);
+    if(strcmp(file,"--file")){
+        printf("invalid input\n");
+        return;
+    }
+    else{
+       sscanf(input3,"%s%s%s",file,absoluteadd,all);
+    if(strcmp(all,"-at")==0){
+        sscanf(input3,"%s%s%s%d%s",file,absoluteadd,all,&at,type);
+        if(strcmp(type,"byword")==0){
+          checkbyword=1;
+        }
+        else if(strcmp(type,"all")==0){
+            printf("invalid input\n");
+        }
+        else if(strcmp(type,"count")==0){
+            printf("invalid input\n");
+        }
+       } 
+    else if(strcmp(all,"count")==0){
+        sscanf(input3,"%s%s%s%s",file,absoluteadd,all,type);
+        if (strcmp(type,"all")==0||strcmp(type,"at")==0||strcmp(type,"byword")==0)    
+        {
+      printf("invalid input\n");
+        }
+           
+       }
+    else if(strcmp(all,"byword")==0){
+        checkbyword=1;
+        sscanf(input3,"%s%s%s%s",file,absoluteadd,all,type);
+        if(strcmp(type,"count")==0){
+            printf("invalid input\n");
+        }
+        else if(strcmp(type,"-at")==0){
+            sscanf(input3,"%s%s%s%s%d",file,absoluteadd,all,type,&at);
+        }
+    }   
+    else if(strcmp(all,"all")==0){
+        s
+    }
+    }
+}
+void autoindent(char *file){
+if(file[0]=='"'){
+    removedoubleqoute(file);
+}
+FILE *myfile=fopen(file,"r");
+if(myfile==0){
+    printf("err:file dosent exist\n");
+}
+else{
+    char imp;
+    char *indentmod;
+    int numofchar =0;
+    int numofline=0;
+    while (!feof(file))
+    {
+        imp=fgetc(file);
+        indentmod[numofchar]=imp;
+        numofchar++;
+        if(imp='\n'){
+            numofline++;
+        }
+    }
+fclose (file);
+for(int i=0;indentmod[i]!=NULL;i++){
+if(indentmod[i]==' '||indentmod[i]=='\n'){
+    if(indentmod[i-1]=='{'||indentmod[i-1]=='}'){
+        memmove(&indentmod[i],&indentmod[i-1],strlen(indentmod)-i);
+        i--;
+    }
+   else if(indentmod[i]==' '||indentmod[i]=='\n'){
+    if(indentmod[i+1]=='{'||indentmod[i+1]=='}'){
+        memmove(&indentmod[i],&indentmod[i+1],strlen(indentmod)-i);
+        i=i-2;;
+    }
+}
+}
+}
+int counter=0;
+for (int i = 0; indentmod[i]!=NULL; i++)
+{
+    if(indentmod[i]=='{'){
+        if(i!=0&&indentmod[i-1]!='\n'&&indentmod[i-1] ==' '){
+            memmove(&indentmod[i+1],&indentmod[i],strlen(indentmod)-i+1);
+            indentmod[i]=' ';
+            i++;
+        }
+        counter++;
+        if(indentmod[i+1]=='}'){
+                     
+            if (indentmod[i - 1] != '\n' && indentmod[i - 1] != ' ')
+            {
+                memmove(&indentmod[4 * (counter - 1) + i + 1], &indentmod[i], strlen(indentmod) - i + 1);
+                indentmod[i] = '\n';
+                
+                              i++;
+                for (int j = 0; j < 4 * (counter - 1); j++)
+                {
+                    indentmod[i] = ' ';
+                    i++;
+                }
+            }
+            counter--;
+            if (indentmod[i + 1] == '}')
+            {
+                memmove(&indentmod[4 * (counter - 1) + i + 2], &indentmod[i + 1], strlen(contents) - i);
+                contents[i + 1] = '\n';
+                i++;
+                for (int j = 0; j < 4 * (counter - 1); j++)
+                {
+                    indentmod[i + 1] = ' ';
+                    i++;
+                }
+            }
+            else if (indentmod[i + 1] == ' ' || indentmod[i + 1] == '\n' || indentmod[i + 1] == '\0')
+            {
+            }
+            else
+            {
+                memmove(&indentmod[4 * counter + i + 2], &indentmod[i + 1], strlen(indentmod) - i);
+                indentmod[i + 1] = '\n';
+                i++;
+                for (int j = 0; j < 4 * counter; j++)
+                {
+                    indentmod[i + 1] = ' ';
+                    i++;
+                }
+            }
+        }
+    }
+} 
+        
+    }
+}
+
 }
